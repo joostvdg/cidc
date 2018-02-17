@@ -45,6 +45,8 @@ We need the following configurations in Keycloak:
 * Create a group
 * Create a user
 * Add user to the group
+* Connect nexus 3 to LDAP
+* Connect portainer to LDAP
 
 The default credetials for Keycloak is ```admin``` ```admin```.
 
