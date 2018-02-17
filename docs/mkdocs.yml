@@ -1,0 +1,54 @@
+# Meta
+site_name: CI Stack 2
+site_author: 'Joost van der Griendt'
+site_url: 'http://joostvdg.github.io'
+
+# Docs dir
+docs_dir: 'docs'
+
+# Repository
+# repo_name: 'GitLab'
+# repo_url: 'https://gitlab.flusso.nl/flusso/java-taskforce.git'
+
+# Copyright
+copyright: 'Copyright &copy; 2018 Joost van der Griendt B.V.'
+
+pages:
+- Home: index.md
+
+# Theme
+# Configuration
+theme:
+  name: 'material'
+  language: 'en'
+  palette:
+    primary: 'indigo'
+    accent: 'indigo'
+  font:
+    text: 'Roboto'
+    code: 'Roboto Mono'
+
+
+# Extensions
+markdown_extensions:
+  - admonition
+  - codehilite:
+      linenums: true
+      guess_lang: false
+  - footnotes
+  - meta
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.critic
+  - pymdownx.inlinehilite
+  - pymdownx.magiclink
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde

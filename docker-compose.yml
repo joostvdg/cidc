@@ -1,0 +1,119 @@
+version: "3.5"
+
+services:
+  keycloak:
+    image: jboss/keycloak:3.4.2.Final
+    ports:
+      - 8280:8080
+    links:
+      - postgres
+    depends_on:
+      - postgres
+    environment:
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=admin
+      - PROXY_ADDRESS_FORWARDING=true 
+      - KEYCLOAK_LOGLEVEL=DEBUG
+      - DB_VENDOR=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DATABASE=docker
+      - POSTGRES_USER=docker
+      - POSTGRES_PASSWORD=docker
+      - POSTGRES_PORT_5432_TCP_ADDR=postgres
+      - POSTGRES_PORT_5432_TCP_PORT=5432
+  
+  docs:
+    build: docs
+    image: ci-stack-docs
+    ports:
+      - 8281:80
+    environment:
+       - OIDC_PASS_PHRASE="a-random-secret-used-by-apache-oidc-and-balancer"
+       - OIDC_METADATA_URL="http://172.17.0.1:8280/auth/realms/ci/.well-known/openid-configuration"
+       - OIDC_CLIENT_ID="docs"
+       - OIDC_CLIENT_SECRET="dbf18a38-b612-4413-a82d-92cd17b05bc5"
+       - OIDC_REDIRECT_URL="http://boreas:8281/redirect_uri"
+       - OIDC_REMOTE_USER_CLAIM="preferred_username"
+  
+  jenkins:
+    build: jenkins
+    image: ci-stack-jenkins
+    ports:
+      - 8282:8080
+    environment:
+       - JENKINS_OPTS=--prefix=/jenkins
+       - JAVA_OPTS=-Djenkins.install.runSetupWizard=false -server -XX:+AlwaysPreTouch -Duser.timezone=Europe/Amsterdam -Xmx1024m -Xms1024m
+       - TRY_UPGRADE_IF_NO_MARKER=true
+    volumes: ["jenkins_home_maxio:/var/jenkins_home"]
+
+  sonar:
+    image: ci-stack-sonar
+    build: sonar
+    ports:
+      - 8289:9000    
+    command: -Dsonar.web.context=/sonar -Dsonar.ce.javaOpts=-Xmx768m -Dsonar.web.javaOpts=-Xmx768m
+    volumes: ["sonar_data:/opt/sonarqube/data"]
+
+  postgres:
+    image: postgres:9.6.7
+    ports:    
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=docker
+      - POSTGRES_USER=docker
+      - POSTGRES_DB=docker
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  pgadmin4:
+    image: chorss/docker-pgadmin4
+    depends_on:
+      - postgres
+    ports:
+      - 5050:5050
+    environment:
+      - POSTGRES_PASSWORD=docker
+      - POSTGRES_USER=docker
+      - POSTGRES_DB=docker
+    volumes:
+      - pgadmin_data:/data
+
+
+  # Default Nexus 3 images is poor for mounting data
+  # https://github.com/cavemandaveman/nexus
+  nexus:                               
+    image: cavemandaveman/nexus
+    ports:
+      - 8284:8081
+    volumes: ["nexus_data:/nexus-data"]
+
+  gogs:
+    image: gogs/gogs:0.11.34
+    ports:
+      - 8291:3000
+      - "8092:22"
+    volumes: ["gogs_data:/data"]
+
+  portainer:
+    image: portainer/portainer
+    ports:
+      - 9000:9000
+    volumes: ["/var/run/docker.sock:/var/run/docker.sock","portainer_data:/data portainer/portainer"]
+
+  ldap: 
+    image: ci-stack-opendj 
+    build: ldap 
+    ports: 
+      - 11389:1389 
+      - 11636:1636 
+      - 14444:4444
+
+volumes:
+  sonar_data:
+  nexus_data:
+  jenkins_home_maxio:
+  gogs_data:
+  artifactory_data:
+  pgadmin_data:
+  pg_data:
+  portainer_data:
