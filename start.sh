@@ -1,13 +1,11 @@
-#!/usr/bin/env bash
 echo '############# S T A R T ################'
 echo '########################################'
 echo '########################################'
-echo '##### ABN AMRO - CICD Sandbox Start'
+echo '##### CIDC Start'
 echo '########################################'
 echo '####### GENERATE CONFIGURATION #########'
 echo '########################################'
-# Use Go util to setup machine specific config for Jenkins/Sonar/...?
-./cicd-sandbox-util.exe
+./cicd-sandbox-util
 HOSTNAME=$(hostname)
 ./scripts/prepare-jenkins-config.sh
 echo '########################################'
@@ -42,7 +40,7 @@ RUNNING=`docker ps | grep -c sb_sonar_1`
 if [ $RUNNING -gt 0 ]
 then
    echo "Sonar is up"
-   ./cicd-sandbox-util.exe --action init-sonar
+   ./cicd-sandbox-util --action init-sonar
 else
     echo "Sonar is down, lets try again after 30 seconds"
     sleep 30
@@ -50,7 +48,7 @@ else
     if [ $RUNNING -gt 0 ]
     then
         echo "Sonar is up"
-        ./cicd-sandbox-util.exe --action init-sonar
+        ./cicd-sandbox-util --action init-sonar
     else
         echo "Sonar is down, we give up"
     fi
