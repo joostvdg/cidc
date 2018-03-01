@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<org.jenkinsci.plugins.KeycloakSecurityRealm_-DescriptorImpl plugin="keycloak@2.0.3">
+  <keycloakJson>{
+        &quot;realm&quot;: &quot;ci&quot;,
+        &quot;auth-server-url&quot;: &quot;http://KEYCLOAK_HOST.solon.prd:8280/auth&quot;,
+        &quot;ssl-required&quot;: &quot;external&quot;,
+        &quot;resource&quot;: &quot;jenkins&quot;,
+        &quot;public-client&quot;: true
+}</keycloakJson>
+</org.jenkinsci.plugins.KeycloakSecurityRealm_-DescriptorImpl>

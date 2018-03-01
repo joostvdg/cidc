@@ -1,14 +1,22 @@
-version: "3.5"
+version: "2.2"
 
 services:
   keycloak:
-    image: jboss/keycloak:3.4.2.Final
+    build: keycloak
+    image: ci-stack-keycloak
     ports:
       - 8280:8080
+    labels:
+      - com.abnamro.namespace=cicd-sandbox
+      - com.abnamro.name="Keycloak"
+      - com.abnamro.description="Single Sign On facility"
+      - com.abnamro.webPath=/
+      - com.abnamro.webPort=8280
     links:
       - postgres
     depends_on:
       - postgres
+      - ldap
     environment:
       - KEYCLOAK_USER=admin
       - KEYCLOAK_PASSWORD=admin
@@ -21,41 +29,66 @@ services:
       - POSTGRES_PASSWORD=docker
       - POSTGRES_PORT_5432_TCP_ADDR=postgres
       - POSTGRES_PORT_5432_TCP_PORT=5432
+    command: -b 0.0.0.0 -Dkeycloak.import=/tmp/realms/ci-realm-export.json
   
   docs:
     build: docs
     image: ci-stack-docs
+    labels:
+      - com.abnamro.namespace=cicd-sandbox
+      - com.abnamro.name="Docs"
+      - com.abnamro.description="User documentation"
+      - com.abnamro.webPath=/
+      - com.abnamro.webPort=8281
     ports:
       - 8281:80
-    environment:
-       - OIDC_PASS_PHRASE="a-random-secret-used-by-apache-oidc-and-balancer"
-       - OIDC_METADATA_URL="http://172.17.0.1:8280/auth/realms/ci/.well-known/openid-configuration"
-       - OIDC_CLIENT_ID="docs"
-       - OIDC_CLIENT_SECRET="dbf18a38-b612-4413-a82d-92cd17b05bc5"
-       - OIDC_REDIRECT_URL="http://boreas:8281/redirect_uri"
-       - OIDC_REMOTE_USER_CLAIM="preferred_username"
-  
+
   jenkins:
     build: jenkins
     image: ci-stack-jenkins
+    labels:
+      - com.abnamro.namespace=cicd-sandbox
+      - com.abnamro.name="Jenkins Master"
+      - com.abnamro.description="Jenkins - CI/Build server"
+      - com.abnamro.webPath=/jenkins
+      - com.abnamro.webPort=8282
     ports:
       - 8282:8080
+      - 50000:50000
+    volumes: ["jenkins_data:/var/jenkins_home"]
+
+  jenkins-slave:
+    image: q-nexus-3.nl.eu.abnamro.com:18445/vfarcic/jenkins-swarm-agent:18.02.12-10
+    labels:
+      - com.abnamro.namespace=cicd-sandbox
+      - com.abnamro.name="Jenkins Slave"
+      - com.abnamro.description="Slave with link to docker socket"
+    depends_on:
+      - jenkins
     environment:
-       - JENKINS_OPTS=--prefix=/jenkins
-       - JAVA_OPTS=-Djenkins.install.runSetupWizard=false -server -XX:+AlwaysPreTouch -Duser.timezone=Europe/Amsterdam -Xmx1024m -Xms1024m
-       - TRY_UPGRADE_IF_NO_MARKER=true
-    volumes: ["jenkins_home_maxio:/var/jenkins_home"]
+      - COMMAND_OPTIONS=-master http://jenkins:8080/jenkins -labels 'docker' -executors 2
+    volumes: ["jenkins_slave_workspace:/workspace", "/var/run/docker.sock:/var/run/docker.sock"]
 
   sonar:
     image: ci-stack-sonar
     build: sonar
+    labels:
+      - com.abnamro.namespace=cicd-sandbox
+      - com.abnamro.name="SonarQube"
+      - com.abnamro.webPath=/sonar
+      - com.abnamro.webPort=8289
+      - com.abnamro.description="SonarQube - for software quality scan"
     ports:
       - 8289:9000    
-    command: -Dsonar.web.context=/sonar -Dsonar.ce.javaOpts=-Xmx768m -Dsonar.web.javaOpts=-Xmx768m
     volumes: ["sonar_data:/opt/sonarqube/data"]
+    command: -Dsonar.web.context=/sonar
 
   postgres:
-    image: postgres:9.6.7
+    image: q-nexus-3.nl.eu.abnamro.com:18445/postgres:9.6.7
+    labels:
+      - com.abnamro.namespace=cicd-sandbox
+      - com.abnamro.name="Postgres"
+      - com.abnamro.description="Database for Keycloak"
     ports:    
       - 5432:5432
     environment:
@@ -66,7 +99,13 @@ services:
       - pg_data:/var/lib/postgresql/data
 
   pgadmin4:
-    image: chorss/docker-pgadmin4
+    image: q-nexus-3.nl.eu.abnamro.com:18445/chorss/docker-pgadmin4
+    labels:
+      - com.abnamro.namespace=cicd-sandbox
+      - com.abnamro.name="PGAdmin 4"
+      - com.abnamro.description="Web admin console for postgres"
+      - com.abnamro.webPath=/
+      - com.abnamro.webPort=5050
     depends_on:
       - postgres
     ports:
@@ -82,26 +121,35 @@ services:
   # Default Nexus 3 images is poor for mounting data
   # https://github.com/cavemandaveman/nexus
   nexus:                               
-    image: cavemandaveman/nexus
+    image: q-nexus-3.nl.eu.abnamro.com:18445/cavemandaveman/nexus
+    labels:
+      - com.abnamro.namespace=cicd-sandbox
+      - com.abnamro.name="Nexus 3"
+      - com.abnamro.description="Binary repository"
+      - com.abnamro.webPath=/nexus
+      - com.abnamro.webPort=8284
     ports:
       - 8284:8081
     volumes: ["nexus_data:/nexus-data"]
 
-  gogs:
-    image: gogs/gogs:0.11.34
-    ports:
-      - 8291:3000
-      - "8092:22"
-    volumes: ["gogs_data:/data"]
-
   portainer:
-    image: portainer/portainer
+    image: q-nexus-3.nl.eu.abnamro.com:18445/portainer/portainer
+    labels:
+      - com.abnamro.namespace=cicd-sandbox
+      - com.abnamro.name="Portainer"
+      - com.abnamro.description="Admin console for Docker"
+      - com.abnamro.webPath=/
+      - com.abnamro.webPort=9000
     ports:
       - 9000:9000
     volumes: ["/var/run/docker.sock:/var/run/docker.sock","portainer_data:/data portainer/portainer"]
 
   ldap: 
     image: ci-stack-opendj 
+    labels:
+      - com.abnamro.namespace=cicd-sandbox
+      - com.abnamro.name="OpenDJ"
+      - com.abnamro.description="LDAP server for user management"
     build: ldap 
     ports: 
       - 11389:1389 
@@ -111,8 +159,8 @@ services:
 volumes:
   sonar_data:
   nexus_data:
-  jenkins_home_maxio:
-  gogs_data:
+  jenkins_data:
+  jenkins_slave_workspace:
   artifactory_data:
   pgadmin_data:
   pg_data:
