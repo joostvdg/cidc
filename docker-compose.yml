@@ -52,6 +52,16 @@ services:
       - com.abnamro.description="Jenkins - CI/Build server"
       - com.abnamro.webPath=/jenkins
       - com.abnamro.webPort=8282
+    environment:
+      - HOSTNAME=${JENKINS_HOSTNAME:-localhost}
+      - EXTERNAL_PORT=${JENKINS_EXTERNAL_PORT:-8282}
+      - CONTEXT_ROOT=${JENKINS_CONTEXT_ROOT:-/jenkins}
+      - KEYCLOAK_HOSTNAME=${hostname:-localhost}
+      - KEYCLOAK_PORT=${KEYCLOAK_PORT:-8280}
+      - KEYCLOAK_HOSTNAME_SUFFIX=${KEYCLOAK_HOSTNAME_SUFFIX:-.solon.prd}
+      - KEYCLOAK_HOSTNAME_LOWERCASE=${KEYCLOAK_HOSTNAME_LOWERCASE:-true}
+      - SONAR_HOSTNAME=${SONAR_HOSTNAME:-sonar}
+      - NEXUS_HOSTNAME=${NEXUS_HOSTNAME:-nexus}
     ports:
       - 8282:8080
       - 50000:50000
