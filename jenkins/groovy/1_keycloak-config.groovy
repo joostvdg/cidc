@@ -8,12 +8,19 @@ import org.jenkinsci.plugins.KeycloakSecurityRealm;
 
 def instance = Jenkins.getInstance()
 
-println "=== Configuring keycloak for Jenkins == Start"
+println "###############################################"
+println "### Configuring keycloak for Jenkins - START ##"
+
+def keycloakBaseUrl = System.getProperty("KEYCLOAK_BASE_URL")
+def keycloakAuthServerUrl = keycloakBaseUrl + "/auth"
+
+println "############# ENV VARIABLES ###################"
+println "### keycloakAuthServerUrl   :: ${keycloakAuthServerUrl}"
 
 org.kohsuke.stapler.StaplerRequest stapler = null
 net.sf.json.JSONObject jsonObject = new net.sf.json.JSONObject()
 jsonObject.put("realm", "ci")
-jsonObject.put("auth-server-url", "http://172.17.0.1:8280/auth")
+jsonObject.put("auth-server-url", keycloakAuthServerUrl)
 jsonObject.put("ssl-required", "external")
 jsonObject.put("resource", "jenkins")
 jsonObject.put("public-client", true)
@@ -26,4 +33,6 @@ SecurityRealm keycloak_realm = new org.jenkinsci.plugins.KeycloakSecurityRealm()
 keycloak_realm.getDescriptor().configure(stapler, keycloak)
 instance.setSecurityRealm(keycloak_realm)
 instance.save()
-println "=== Configuring keycloak for Jenkins == Finish"
+
+println "### Configuring keycloak for Jenkins - END ####"
+println "###############################################"

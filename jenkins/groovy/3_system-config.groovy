@@ -12,29 +12,36 @@ import hudson.markup.EscapedMarkupFormatter
 import hudson.model.Node.Mode
 
 def instance = Jenkins.getInstance()
-println "=== Configuring System for Jenkins == Start"
+println "###############################################"
+println "### Configuring System for Jenkins - START ####"
 
-println " = Set System Message"
+def jenkinsBaseServerUrl = System.getProperty("JENKINS_BASE_URL")
+
+println "############# ENV VARIABLES ###################"
+println "### jenkinsBaseServerUrl   :: ${jenkinsBaseServerUrl}"
+
+println "# Set System Message"
 instance.setSystemMessage("Welcome to the CICD Sandbox")
     
-println " = Configure Master's slave settings"
+println "# Configure Master's slave settings"
 instance.setLabelString('master')
 instance.setNumExecutors(2)    
-instance.setMode(Mode.EXCLUSIVE)
+instance.setMode(Mode.EXCLUSIVE) // exclusive means that only when its label is used, do you use this slave
+instance.setSlaveAgentPort([50000]) // default is 50000
 
-println(" = Configuring Quiet Period")
-// We do not wait for anything
-instance.quietPeriod = 0
+println "# Configuring Quiet Period"
+instance.quietPeriod = 0 // We do not wait for anything
 
-println " = Set SCM Checkout Retry Count"
+println "# Set SCM Checkout Retry Count"
 instance.setScmCheckoutRetryCount(3)
 
-println " = Set Server URL"
+println "# Set Server URL"
 JenkinsLocationConfiguration location = instance.getExtensionList(jenkins.model.JenkinsLocationConfiguration).get(0)
-location.setUrl("http://localhost:8282/jenkins")
+location.setUrl(jenkinsBaseServerUrl)
 
-println " = Set Default Formatter"
+println "# Set Default Formatter"
 RawHtmlMarkupFormatter markupFormatter = new RawHtmlMarkupFormatter(false) // disable syntax highlighting = false
 instance.setMarkupFormatter(markupFormatter)
 
-println "=== Configuring System for Jenkins == Finish"
+println "### Configuring System for Jenkins - END ######"
+println "###############################################"

@@ -7,24 +7,26 @@ import org.kohsuke.stapler.StaplerProxy
 import hudson.security.*
 
 def instance = Jenkins.getInstance()
-println "=== Configuring Security for Jenkins == Start"
+println "###############################################"
+println "### Configuring Security for Jenkins - START ##"
 
-println " = Disable Remoting CLI"
+println "# Disable Remoting CLI"
 CLI.get().enabled = false
 
-println " = Disable Remember me"
-jenkins.setDisableRememberMe(false)
+println "# Disable Remember me"
+instance.setDisableRememberMe(false)
 
-println " = Set Agents Protocols to only JNLP4"
+println "# Set Agents Protocols to only JNLP4"
 instance.getExtensionList(StaplerProxy.class)
     .get(AdminWhitelistRule.class)
     .masterKillSwitch = false
 instance.agentProtocols = new HashSet<String>(["JNLP4-connect"])
 
-println " = Set CSRF"
-instance.crumbIssuer = new DefaultCrumbIssuer(true)
+// We don't need this locally, and it might be a bit to complicated for now with requiring external scripts to be executed
+//println "# Set CSRF" 
+//instance.crumbIssuer = new DefaultCrumbIssuer(true)
 
-println " = Set Authorization Strategy (Matrix)"
+println "# Set Authorization Strategy (Matrix)"
 def strategy = new GlobalMatrixAuthorizationStrategy()
 
 //  Slave Permissions for Anonymous --> for the Swarm Agent
@@ -34,6 +36,8 @@ strategy.add(hudson.model.Computer.CONNECT,'anonymous')
 strategy.add(hudson.model.Computer.CREATE,'anonymous')
 strategy.add(hudson.model.Computer.DELETE,'anonymous')
 strategy.add(hudson.model.Computer.DISCONNECT,'anonymous')
+strategy.add(hudson.model.Hudson.READ,'anonymous') // also needs read access, else you get "http 403"
+
 
 // The rest is for Authenticated
 strategy.add(com.cloudbees.plugins.credentials.CredentialsProvider.CREATE,'authenticated')
@@ -41,6 +45,7 @@ strategy.add(com.cloudbees.plugins.credentials.CredentialsProvider.DELETE,'authe
 strategy.add(com.cloudbees.plugins.credentials.CredentialsProvider.MANAGE_DOMAINS,'authenticated')
 strategy.add(com.cloudbees.plugins.credentials.CredentialsProvider.UPDATE,'authenticated')
 strategy.add(com.cloudbees.plugins.credentials.CredentialsProvider.VIEW,'authenticated')
+
 
 strategy.add(hudson.model.Computer.BUILD,'authenticated')
 strategy.add(hudson.model.Computer.CONFIGURE,'authenticated')
@@ -74,4 +79,5 @@ strategy.add(hudson.scm.SCM.TAG,'authenticated')
 instance.setAuthorizationStrategy(strategy)
 instance.save()
 
-println "=== Configuring Security for Jenkins == Finish"
+println "### Configuring Security for Jenkins - END  ###"
+println "###############################################"
