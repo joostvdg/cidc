@@ -1,0 +1,100 @@
+<project>
+    <actions/>
+    <description/>
+    <keepDependencies>false</keepDependencies>
+    <properties>
+        <jenkins.model.BuildDiscarderProperty>
+            <strategy class="hudson.tasks.LogRotator">
+                <daysToKeep>10</daysToKeep>
+                <numToKeep>10</numToKeep>
+                <artifactDaysToKeep>-1</artifactDaysToKeep>
+                <artifactNumToKeep>-1</artifactNumToKeep>
+            </strategy>
+        </jenkins.model.BuildDiscarderProperty>
+        <hudson.model.ParametersDefinitionProperty>
+            <parameterDefinitions>
+                <hudson.model.StringParameterDefinition>
+                    <name>sonar_token</name>
+                    <description>Token for SonarQube.</description>
+                    <defaultValue>INVALID</defaultValue>
+                </hudson.model.StringParameterDefinition>
+            </parameterDefinitions>
+        </hudson.model.ParametersDefinitionProperty>
+    </properties>
+    <scm class="hudson.scm.NullSCM"/>
+    <canRoam>true</canRoam>
+    <disabled>false</disabled>
+    <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+    <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+    <triggers/>
+    <concurrentBuild>false</concurrentBuild>
+    <builders>
+        <hudson.plugins.groovy.SystemGroovy plugin="groovy@2.0">
+            <source class="hudson.plugins.groovy.StringSystemScriptSource">
+                <script plugin="script-security@1.41">
+                    <script>
+import jenkins.*
+import jenkins.model.*
+import hudson.model.*
+import hudson.tasks.Shell
+import hudson.slaves.EnvironmentVariablesNodeProperty
+import hudson.slaves.EnvironmentVariablesNodeProperty.Entry
+import jenkins.model.Jenkins
+import jenkins.model.JenkinsLocationConfiguration
+import jenkins.security.s2m.AdminWhitelistRule
+import hudson.markup.RawHtmlMarkupFormatter
+import hudson.markup.EscapedMarkupFormatter
+import hudson.model.Node.Mode
+import hudson.plugins.sonar.*
+import hudson.plugins.sonar.model.*
+
+println("=== Configuring SonarQube Server == Start")
+def instance = Jenkins.getInstance()
+
+def sonar_token = build.buildVariableResolver.resolve("sonar_token")
+println "sonar_token=$sonar_token"
+
+SonarGlobalConfiguration sonar_conf = instance.getDescriptorByType(SonarGlobalConfiguration.class)
+def sonar_inst = new SonarInstallation(
+    "sonar", // name,     "http://sonar:9000", // serverUrl,     "5.3",     sonar_token, // serverAuthenticationToken,
+    "", // databaseUrl,     "", // databaseLogin,     "", // databasePassword,
+    "", // mojoVersion,     "", // additionalProperties,     new TriggersConfig(), //TriggersConfig triggers,
+    "", // sonarLogin,     "", // sonarPassword,     "" // additionalAnalysisProperties
+)
+
+// Only add Sonar if it does not exist - do not overwrite existing config
+def sonar_installations = sonar_conf.getInstallations()
+def sonar_inst_exists = false
+sonar_installations.each {
+    installation = (SonarInstallation) it
+    if (sonar_inst.getName() == installation.getName()) {
+        sonar_inst_exists = true
+        println("Found existing installation: " + installation.getName())
+    }
+}
+
+if (!sonar_inst_exists) {
+    sonar_installations += sonar_inst
+    sonar_conf.setInstallations((SonarInstallation[]) sonar_installations)
+    sonar_conf.save()
+}
+
+
+println("=== Configuring SonarQube Server == Finish")
+</script>
+                    <sandbox>false</sandbox>
+                </script>
+            </source>
+        </hudson.plugins.groovy.SystemGroovy>
+    </builders>
+    <publishers/>
+    <buildWrappers>
+        <hudson.plugins.build__timeout.BuildTimeoutWrapper plugin="build-timeout@1.19">
+            <strategy class="hudson.plugins.build_timeout.impl.AbsoluteTimeOutStrategy">
+                <timeoutMinutes>3</timeoutMinutes>
+            </strategy>
+            <operationList/>
+        </hudson.plugins.build__timeout.BuildTimeoutWrapper>
+        <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@1.8.9"/>
+    </buildWrappers>
+</project>
