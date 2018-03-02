@@ -7,11 +7,11 @@ services:
     ports:
       - 8280:8080
     labels:
-      - com.abnamro.namespace=cicd-sandbox
-      - com.abnamro.name="Keycloak"
-      - com.abnamro.description="Single Sign On facility"
-      - com.abnamro.webPath=/
-      - com.abnamro.webPort=8280
+      - com.github.joostvdg.namespace=cidc
+      - com.github.joostvdg.name="Keycloak"
+      - com.github.joostvdg.description="Single Sign On facility"
+      - com.github.joostvdg.webPath=/
+      - com.github.joostvdg.webPort=8280
     links:
       - postgres
     depends_on:
@@ -35,11 +35,11 @@ services:
     build: docs
     image: ci-stack-docs
     labels:
-      - com.abnamro.namespace=cicd-sandbox
-      - com.abnamro.name="Docs"
-      - com.abnamro.description="User documentation"
-      - com.abnamro.webPath=/
-      - com.abnamro.webPort=8281
+      - com.github.joostvdg.namespace=cidc
+      - com.github.joostvdg.name="Docs"
+      - com.github.joostvdg.description="User documentation"
+      - com.github.joostvdg.webPath=/
+      - com.github.joostvdg.webPort=8281
     ports:
       - 8281:80
 
@@ -47,11 +47,11 @@ services:
     build: jenkins
     image: ci-stack-jenkins
     labels:
-      - com.abnamro.namespace=cicd-sandbox
-      - com.abnamro.name="Jenkins Master"
-      - com.abnamro.description="Jenkins - CI/Build server"
-      - com.abnamro.webPath=/jenkins
-      - com.abnamro.webPort=8282
+      - com.github.joostvdg.namespace=cidc
+      - com.github.joostvdg.name="Jenkins Master"
+      - com.github.joostvdg.description="Jenkins - CI/Build server"
+      - com.github.joostvdg.webPath=/jenkins
+      - com.github.joostvdg.webPort=8282
     environment:
       - HOSTNAME=${JENKINS_HOSTNAME:-localhost}
       - EXTERNAL_PORT=${JENKINS_EXTERNAL_PORT:-8282}
@@ -68,11 +68,11 @@ services:
     volumes: ["jenkins_data:/var/jenkins_home"]
 
   jenkins-slave:
-    image: q-nexus-3.nl.eu.abnamro.com:18445/vfarcic/jenkins-swarm-agent:18.02.12-10
+    image: vfarcic/jenkins-swarm-agent:18.02.12-10
     labels:
-      - com.abnamro.namespace=cicd-sandbox
-      - com.abnamro.name="Jenkins Slave"
-      - com.abnamro.description="Slave with link to docker socket"
+      - com.github.joostvdg.namespace=cidc
+      - com.github.joostvdg.name="Jenkins Slave"
+      - com.github.joostvdg.description="Slave with link to docker socket"
     depends_on:
       - jenkins
     environment:
@@ -83,22 +83,22 @@ services:
     image: ci-stack-sonar
     build: sonar
     labels:
-      - com.abnamro.namespace=cicd-sandbox
-      - com.abnamro.name="SonarQube"
-      - com.abnamro.webPath=/sonar
-      - com.abnamro.webPort=8289
-      - com.abnamro.description="SonarQube - for software quality scan"
+      - com.github.joostvdg.namespace=cidc
+      - com.github.joostvdg.name="SonarQube"
+      - com.github.joostvdg.webPath=/sonar
+      - com.github.joostvdg.webPort=8289
+      - com.github.joostvdg.description="SonarQube - for software quality scan"
     ports:
       - 8289:9000    
     volumes: ["sonar_data:/opt/sonarqube/data"]
     command: -Dsonar.web.context=/sonar
 
   postgres:
-    image: q-nexus-3.nl.eu.abnamro.com:18445/postgres:9.6.7
+    image: postgres:9.6.7
     labels:
-      - com.abnamro.namespace=cicd-sandbox
-      - com.abnamro.name="Postgres"
-      - com.abnamro.description="Database for Keycloak"
+      - com.github.joostvdg.namespace=cidc
+      - com.github.joostvdg.name="Postgres"
+      - com.github.joostvdg.description="Database for Keycloak"
     ports:    
       - 5432:5432
     environment:
@@ -109,13 +109,13 @@ services:
       - pg_data:/var/lib/postgresql/data
 
   pgadmin4:
-    image: q-nexus-3.nl.eu.abnamro.com:18445/chorss/docker-pgadmin4
+    image: chorss/docker-pgadmin4
     labels:
-      - com.abnamro.namespace=cicd-sandbox
-      - com.abnamro.name="PGAdmin 4"
-      - com.abnamro.description="Web admin console for postgres"
-      - com.abnamro.webPath=/
-      - com.abnamro.webPort=5050
+      - com.github.joostvdg.namespace=cidc
+      - com.github.joostvdg.name="PGAdmin 4"
+      - com.github.joostvdg.description="Web admin console for postgres"
+      - com.github.joostvdg.webPath=/
+      - com.github.joostvdg.webPort=5050
     depends_on:
       - postgres
     ports:
@@ -131,25 +131,25 @@ services:
   # Default Nexus 3 images is poor for mounting data
   # https://github.com/cavemandaveman/nexus
   nexus:                               
-    image: q-nexus-3.nl.eu.abnamro.com:18445/cavemandaveman/nexus
+    image: cavemandaveman/nexus
     labels:
-      - com.abnamro.namespace=cicd-sandbox
-      - com.abnamro.name="Nexus 3"
-      - com.abnamro.description="Binary repository"
-      - com.abnamro.webPath=/nexus
-      - com.abnamro.webPort=8284
+      - com.github.joostvdg.namespace=cidc
+      - com.github.joostvdg.name="Nexus 3"
+      - com.github.joostvdg.description="Binary repository"
+      - com.github.joostvdg.webPath=/nexus
+      - com.github.joostvdg.webPort=8284
     ports:
       - 8284:8081
     volumes: ["nexus_data:/nexus-data"]
 
   portainer:
-    image: q-nexus-3.nl.eu.abnamro.com:18445/portainer/portainer
+    image: portainer/portainer
     labels:
-      - com.abnamro.namespace=cicd-sandbox
-      - com.abnamro.name="Portainer"
-      - com.abnamro.description="Admin console for Docker"
-      - com.abnamro.webPath=/
-      - com.abnamro.webPort=9000
+      - com.github.joostvdg.namespace=cidc
+      - com.github.joostvdg.name="Portainer"
+      - com.github.joostvdg.description="Admin console for Docker"
+      - com.github.joostvdg.webPath=/
+      - com.github.joostvdg.webPort=9000
     ports:
       - 9000:9000
     volumes: ["/var/run/docker.sock:/var/run/docker.sock","portainer_data:/data portainer/portainer"]
@@ -157,9 +157,9 @@ services:
   ldap: 
     image: ci-stack-opendj 
     labels:
-      - com.abnamro.namespace=cicd-sandbox
-      - com.abnamro.name="OpenDJ"
-      - com.abnamro.description="LDAP server for user management"
+      - com.github.joostvdg.namespace=cidc
+      - com.github.joostvdg.name="OpenDJ"
+      - com.github.joostvdg.description="LDAP server for user management"
     build: ldap 
     ports: 
       - 11389:1389 
