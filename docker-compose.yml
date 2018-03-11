@@ -127,20 +127,40 @@ services:
     volumes:
       - pgadmin_data:/data
 
+## Artifactory
+# Default user: admin:password
+  artifactory:                               
+    image: docker.bintray.io/jfrog/artifactory-oss:latest
+    labels:
+      - com.github.joostvdg.namespace=cidc
+      - com.github.joostvdg.name="Artifactory OSS"
+      - com.github.joostvdg.description="Binary repository for development"
+      - com.github.joostvdg.webPath=/artifactory
+      - com.github.joostvdg.webPort=8285
+    ports:
+      - 8285:8081
+    restart: always
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 32000
+        hard: 40000
+    volumes: ["artifactory_data:/var/opt/jfrog/artifactory"]
+
 
   # Default Nexus 3 images is poor for mounting data
   # https://github.com/cavemandaveman/nexus
-  nexus:                               
-    image: cavemandaveman/nexus
-    labels:
-      - com.github.joostvdg.namespace=cidc
-      - com.github.joostvdg.name="Nexus 3"
-      - com.github.joostvdg.description="Binary repository"
-      - com.github.joostvdg.webPath=/nexus
-      - com.github.joostvdg.webPort=8284
-    ports:
-      - 8284:8081
-    volumes: ["nexus_data:/nexus-data"]
+  # nexus:                               
+  #   image: cavemandaveman/nexus:3.9.0-01
+  #   labels:
+  #     - com.github.joostvdg.namespace=cidc
+  #     - com.github.joostvdg.name="Nexus 3"
+  #     - com.github.joostvdg.description="Binary repository"
+  #     - com.github.joostvdg.webPath=/nexus
+  #     - com.github.joostvdg.webPort=8284
+  #   ports:
+  #     - 8284:8081
+  #   volumes: ["nexus_data:/nexus-data"]
 
   portainer:
     image: portainer/portainer
@@ -165,6 +185,46 @@ services:
       - 11389:1389 
       - 11636:1636 
       - 14444:4444
+
+  service-listing: 
+    image: abnamrocoesd/cicd-sandbox-util:latest
+    labels:
+      - com.github.joostvdg.namespace=cidc
+      - com.github.joostvdg.name="CIDC Service Listing"
+      - com.github.joostvdg.description="The container of this page"
+    ports:
+      - 7777:7777
+    command: cicd-util -action serve -labelPrefix "com.github.joostvdg." -namespace "cidc"
+    volumes: ["/var/run/docker.sock:/var/run/docker.sock"]
+
+## Docker Registry
+# https://docs.docker.com/registry/deploying
+  registry: 
+    image: registry:2
+    labels:
+      - com.github.joostvdg.namespace=cidc
+      - com.github.joostvdg.name="Docker Registry"
+      - com.github.joostvdg.description="Docker Registry by Docker"
+    ports: 
+      - 5000:5000
+
+## Docker Registry UI
+# https://hub.docker.com/r/konradkleine/docker-registry-frontend/
+  registry-ui: 
+    image: konradkleine/docker-registry-frontend:v2
+    labels:
+      - com.github.joostvdg.namespace=cidc
+      - com.github.joostvdg.name="Docker Registry Frontend"
+      - com.github.joostvdg.description="A UI for the docker registry"
+      - com.github.joostvdg.webPath=/
+      - com.github.joostvdg.webPort=8288
+    environment:
+      - ENV_DOCKER_REGISTRY_HOST=registry
+      - ENV_DOCKER_REGISTRY_PORT=5000
+    depends_on:
+      - registry
+    ports: 
+      - 8288:80  
 
 volumes:
   sonar_data:
