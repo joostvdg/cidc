@@ -20,7 +20,7 @@ services:
     environment:
       - KEYCLOAK_USER=admin
       - KEYCLOAK_PASSWORD=admin
-      - PROXY_ADDRESS_FORWARDING=true 
+      - PROXY_ADDRESS_FORWARDING=true
       - KEYCLOAK_LOGLEVEL=DEBUG
       - DB_VENDOR=postgres
       - POSTGRES_PORT=5432
