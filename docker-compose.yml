@@ -226,6 +226,25 @@ services:
     ports: 
       - 8288:80  
 
+## OPEN PROJECT
+# https://hub.docker.com/r/openproject/community/
+# https://www.openproject.org/download-and-installation/#_ga=2.91403290.1635271910.1520803291-188908855.1520803291 
+# Default user: admin:admin
+# Current: K7xsR#jDG148#u%4
+  # openproject: 
+  #   image: openproject/community:7
+  #   labels:
+  #     - com.github.joostvdg.namespace=cidc
+  #     - com.github.joostvdg.name="OpenProject"
+  #     - com.github.joostvdg.description="Project Management system"
+  #     - com.github.joostvdg.webPath=/
+  #     - com.github.joostvdg.webPort=8290
+  #   environment:
+  #     - SECRET_KEY_BASE=youshouldoverwritethiswithsomethingelse
+  #   ports:
+  #     - 8290:80
+  #   volumes: ["openprojectdb_data:/var/lib/postgresql/9.4/main", "openproject_data:/var/db/openproject"]
+
 volumes:
   sonar_data:
   nexus_data:
@@ -235,3 +254,6 @@ volumes:
   pgadmin_data:
   pg_data:
   portainer_data:
+  openprojectdb_data:
+  openproject_data:
+
