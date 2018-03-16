@@ -175,11 +175,11 @@ services:
   splunk:
     image: q-nexus-3.nl.eu.abnamro.com:18445/splunk/splunk:7.0.0-monitor
     labels:
-      - com.abnamro.namespace=cicd-sandbox
-      - com.abnamro.name="Splunk"
-      - com.abnamro.description="DevOps logging/dashboarding tool"
-      - com.abnamro.webPath=/
-      - com.abnamro.webPort=8287
+      - com.github.joostvdg.namespace=cidc
+      - com.github.joostvdg.name="Splunk"
+      - com.github.joostvdg.description="DevOps logging/dashboarding tool"
+      - com.github.joostvdg.webPath=/
+      - com.github.joostvdg.webPort=8287
     environment:
       - SPLUNK_START_ARGS=--accept-license --answer-yes
       - SPLUNK_USER=root
