@@ -1,8 +1,8 @@
-FROM jenkins/jenkins:2.89.4-slim
+FROM jenkins/jenkins:2.107.1-slim
 
 MAINTAINER Joost van der Griendt <joostvdg@gmail.com>
 LABEL authors="Joost van der Griendt <joostvdg@gmail.com>"
-LABEL version="2.89.4-1"
+LABEL version="2.107.1-1"
 LABEL description="Docker container for Jenkins Master For Docker Swarm"
 
 ENV JENKINS_OPTS "$JENKINS_OPTS --prefix=/jenkins"
