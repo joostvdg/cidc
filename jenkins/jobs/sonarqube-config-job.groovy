@@ -66,6 +66,7 @@ job('configs/sonar') {
         artifactNumToKeep(5)
         artifactDaysToKeep(5)
     }
+    authenticationToken('JENKINS_ROCKS')
     wrappers {
         timestamps()
         timeout {
