@@ -192,27 +192,27 @@ services:
 # admin / changeme
 # Jenkins token: 806b2310-ced6-4693-b3e4-f81bd17f41e8
 # we need to add "--answer-yes" due to upgrade stuff: https://github.com/splunk/docker-splunk/issues/21
-  splunk:
-    image: q-nexus-3.nl.eu.abnamro.com:18445/splunk/splunk:7.0.0-monitor
-    labels:
-      - com.github.joostvdg.namespace=cidc
-      - com.github.joostvdg.name="Splunk"
-      - com.github.joostvdg.description="DevOps logging/dashboarding tool"
-      - com.github.joostvdg.webPath=/
-      - com.github.joostvdg.webPort=8287
-    environment:
-      - SPLUNK_START_ARGS=--accept-license --answer-yes
-      - SPLUNK_USER=root
-      - SPLUNK_ENABLE_LISTEN=9997
-      - SPLUNK_ADD=tcp 1514
-    depends_on:
-      - registry
-    ports: 
-      - 8287:8000 
-      - "9997:9997"
-      - "8088:8088"
-      - "1514:1514"
-    volumes: ["opt-splunk-etc:/opt/splunk/etc","opt-splunk-var:/opt/splunk/var", "/var/run/docker.sock:/var/run/docker.sock"]
+  # splunk:
+  #   image: splunk/splunk:7.0.0-monitor
+  #   labels:
+  #     - com.github.joostvdg.namespace=cidc
+  #     - com.github.joostvdg.name="Splunk"
+  #     - com.github.joostvdg.description="DevOps logging/dashboarding tool"
+  #     - com.github.joostvdg.webPath=/
+  #     - com.github.joostvdg.webPort=8287
+  #   environment:
+  #     - SPLUNK_START_ARGS=--accept-license --answer-yes
+  #     - SPLUNK_USER=root
+  #     - SPLUNK_ENABLE_LISTEN=9997
+  #     - SPLUNK_ADD=tcp 1514
+  #   depends_on:
+  #     - registry
+  #   ports: 
+  #     - 8287:8000 
+  #     - "9997:9997"
+  #     - "8088:8088"
+  #     - "1514:1514"
+  #   volumes: ["opt-splunk-etc:/opt/splunk/etc","opt-splunk-var:/opt/splunk/var", "/var/run/docker.sock:/var/run/docker.sock"]
 
   service-listing: 
     image: abnamrocoesd/cicd-sandbox-util:latest
@@ -273,6 +273,48 @@ services:
   #     - 8290:80
   #   volumes: ["openprojectdb_data:/var/lib/postgresql/9.4/main", "openproject_data:/var/db/openproject"]
 
+## Anchore
+# For scanning docker images
+# anchore/jenkins:latest
+
+## ZAP Proxy
+# https://github.com/zaproxy/zaproxy/wiki/Docker
+  # zap-proxy: 
+  #   image: owasp/zap2docker-stable
+  #   labels:
+  #     - com.github.joostvdg.namespace=cidc
+  #     - com.github.joostvdg.name="ZAP Proxy"
+  #     - com.github.joostvdg.description="The OWASP ZAP Proxy"
+  #   ports: 
+  #     - 8295:8080
+  #   command: zap.sh -daemon -host 0.0.0.0 -port 8080
+  #   # Starts in Headless mode
+# Can also be added to your own pipeline like this:
+#  docker run -i --rm --name zapcli --network appregister_default owasp/zap2docker-stable zap-cli quick-scan --self-contained  --start-options '-config api.disablekey=true' http://backend:8888
+
+## Hashicorp Vaul
+# https://github.com/docker-library/docs/tree/master/vault
+# https://hub.docker.com/_/vault/
+# NOTE: this runs in "development mode", as this is supposed to a developer's CICD Sandbox
+# docker exec -ti cidc_vault_1 /bin/sh
+# vault login (enter VAULT_DEV_ROOT_TOKEN_ID below)
+# vault write secret/hello value=world
+# https://www.vaultproject.io/intro/getting-started/first-secret.html
+  vault: 
+    image: vault:0.9.5
+    cap_add:
+      - IPC_LOCK
+    labels:
+      - com.github.joostvdg.namespace=cidc
+      - com.github.joostvdg.name="Hashicorp Vault"
+      - com.github.joostvdg.description="Secrets management system"
+    ports:
+      - 8299:8200
+    environment:
+      - VAULT_DEV_ROOT_TOKEN_ID=2Q2tvgz8Puqy1w9D
+      - VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200
+      - VAULT_ADDR=http://127.0.0.1:8200
+
 volumes:
   sonar_data:
   nexus_data:
@@ -286,3 +328,4 @@ volumes:
   openproject_data:
   opt-splunk-etc:
   opt-splunk-var:
+  anchore_data:
