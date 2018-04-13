@@ -18,6 +18,7 @@ jenkins-design-language:1.5.0
 ws-cleanup:0.34
 blueocean-rest:1.5.0
 blueocean-commons:1.5.0
+buildtriggerbadge:2.9
 pipeline-input-step:2.8
 docker-workflow:1.15.1
 momentjs:1.1.1
@@ -57,6 +58,7 @@ git:3.8.0
 blueocean:1.5.0
 quality-gates:2.5
 ace-editor:1.1
+console-badge:1.1
 pipeline-model-api:1.2.8
 resource-disposer:0.8
 pipeline-githubnotify-step:1.0.4
@@ -124,6 +126,7 @@ description-setter:1.10
 blueocean-i18n:1.5.0
 blueocean-git-pipeline:1.5.0
 workflow-scm-step:2.6
+badge:1.4
 structs:1.14
 cloudbees-disk-usage-simple:0.9
 violations:0.7.11

@@ -19,7 +19,7 @@ pipeline {
         }
         stage('Get Pipeline Library') {
             steps {
-                library 'stpl-pipeline-core@master'
+                library 'jenkins-pipeline-library'
             }
         }
         stage('Checkout') {

@@ -13,7 +13,7 @@ import jenkins.model.*
 
 println("=== Configuring the Global Shared Libraries == Start")
 
-def libConfigName = 'jenkins-pipeline-library-core'
+def libConfigName = 'jenkins-pipeline-library'
 def libConfigRemote = 'https://github.com/joostvdg/jenkins-pipeline-lib.git'
 def globalLibraries = GlobalLibraries.get()
 boolean exists = false
