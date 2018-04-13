@@ -34,6 +34,7 @@ if (exists) {
     def gitScmSource = new GitSCMSource(libConfigRemote)
     def scmSourceRetriever = new SCMSourceRetriever(gitScmSource)
     def libConfig = new LibraryConfiguration(libConfigName, scmSourceRetriever)
+    libConfig.setDefaultVersion('master')
     println("= adding Global Library: ${libConfigName} - ${libConfigRemote}")
     globalLibraries.getLibraries().add(libConfig)
     globalLibraries.save()

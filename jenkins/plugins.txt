@@ -102,6 +102,7 @@ credentials:2.1.16
 workflow-cps:2.48
 blueocean-jwt:1.5.0
 email-ext:2.62
+job-dsl:1.68
 bouncycastle-api:2.16.2
 workflow-support:2.18
 cloudbees-folder:6.4
