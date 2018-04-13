@@ -60,7 +60,6 @@ services:
       - CONTEXT_ROOT=${JENKINS_CONTEXT_ROOT:-/jenkins}
       - SONAR_HOSTNAME=${SONAR_HOSTNAME:-sonar}
       - NEXUS_HOSTNAME=${NEXUS_HOSTNAME:-nexus}
-      - THEME_CSS=http://q-nexus-3.nl.eu.abnamro.com:8082/repository/npm-3rd-party-raw-hosting/cicdsandbox/jenkins-material-theme.css
     ports:
       - 8282:8080
       - 50000:50000
