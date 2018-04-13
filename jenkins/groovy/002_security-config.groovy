@@ -23,20 +23,20 @@ instance.getExtensionList(StaplerProxy.class)
 instance.agentProtocols = new HashSet<String>(["JNLP4-connect"])
 
 // We don't need this locally, and it might be a bit to complicated for now with requiring external scripts to be executed
-//println "# Set CSRF" 
-//instance.crumbIssuer = new DefaultCrumbIssuer(true)
+println "# Set CSRF" 
+instance.crumbIssuer = new DefaultCrumbIssuer(true)
 
 println "# Set Authorization Strategy (Matrix)"
 def strategy = new GlobalMatrixAuthorizationStrategy()
 
 //  Slave Permissions for Anonymous --> for the Swarm Agent
-strategy.add(hudson.model.Computer.BUILD,'anonymous')
-strategy.add(hudson.model.Computer.CONFIGURE,'anonymous')
-strategy.add(hudson.model.Computer.CONNECT,'anonymous')
-strategy.add(hudson.model.Computer.CREATE,'anonymous')
-strategy.add(hudson.model.Computer.DELETE,'anonymous')
-strategy.add(hudson.model.Computer.DISCONNECT,'anonymous')
-strategy.add(hudson.model.Hudson.READ,'anonymous') // also needs read access, else you get "http 403"
+// strategy.add(hudson.model.Computer.BUILD,'anonymous')
+// strategy.add(hudson.model.Computer.CONFIGURE,'anonymous')
+// strategy.add(hudson.model.Computer.CONNECT,'anonymous')
+// strategy.add(hudson.model.Computer.CREATE,'anonymous')
+// strategy.add(hudson.model.Computer.DELETE,'anonymous')
+// strategy.add(hudson.model.Computer.DISCONNECT,'anonymous')
+// strategy.add(hudson.model.Hudson.READ,'anonymous') // also needs read access, else you get "http 403"
 
 
 // The rest is for Authenticated

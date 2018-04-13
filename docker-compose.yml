@@ -65,6 +65,20 @@ services:
       - 50000:50000
     volumes: ["jenkins_data_light:/var/jenkins_home"]
 
+#      - THEME_CSS=https://tobix.github.io/jenkins-neo2-theme/dist/neo-dark.css
+
+  jenkins-slave-light:
+    image: vfarcic/jenkins-swarm-agent:18.04.01-1
+    labels:
+      - com.github.joostvdg.namespace=cidc
+      - com.github.joostvdg.name="Jenkins Slave"
+      - com.github.joostvdg.description="Slave with link to docker socket"
+    depends_on:
+      - jenkins-light
+    environment:
+      - COMMAND_OPTIONS=-master http://jenkins-light:8080/jenkins -labels 'docker' -executors 2 -password admin -username admin -name docker-slave
+    volumes: ["jenkins_slave_workspace:/workspace", "/var/run/docker.sock:/var/run/docker.sock"]
+
   jenkins:
     build: jenkins
     image: ci-stack-jenkins

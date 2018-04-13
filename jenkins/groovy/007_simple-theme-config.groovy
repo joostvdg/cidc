@@ -10,7 +10,7 @@ def instance = Jenkins.getInstance()
 println "####################################################"
 println "### Configuring Simple Theme for Jenkins - START ##"
 
-def cssThemeUrl = System.getProperty("THEME_CSS")
+def cssThemeUrl = System.getenv("THEME_CSS")
 
 println "############# ENV VARIABLES ######################"
 println "### THEME_CSS   :: ${cssThemeUrl}"
