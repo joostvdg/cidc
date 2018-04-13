@@ -1,17 +1,42 @@
-import jenkins.model.Jenkins;
-import hudson.model.FreeStyleProject;
-import hudson.tasks.Shell;
-import javaposse.jobdsl.dsl.DslScriptLoader;
-
-job = Jenkins.instance.createProject(FreeStyleProject, 'job-name')
-
-job.buildersList.add(new Shell('echo hello world'))
-def scriptLoader = new DslScriptLoader()
-scriptLoader.scriptText("""
-job('my-job')
-""")
-job.buildersList.add(scriptLoader)
-
-job.save()
-
-//-------------------------------------------------------------
+pipeline {
+    agent {
+        label 'docker'
+    }
+    options {
+        buildDiscarder logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '5', numToKeepStr: '5')
+        timeout(5)
+        timestamps()
+        disableConcurrentBuilds()
+        disableResume()
+        durabilityHint 'PERFORMANCE_OPTIMIZED'
+    }
+    stages {
+        stage('Pre-Clean') {
+            steps {
+                addInfoBadge id: 'test', text: 'Test'
+                cleanWs()
+            }
+        }
+        stage('Get Pipeline Library') {
+            steps {
+                library 'stpl-pipeline-core@master'
+            }
+        }
+        stage('Checkout') {
+            steps {
+                checkout scm
+                sh 'ls -lath'
+            }
+        }
+        stage('Execute JobDSL') {
+            steps {
+                jobDsl targets: 'jenkins/jobs/config_seed_jobs.groovy'
+            }
+        }
+        stage('Post-Clean') {
+            steps {
+                cleanWs()
+            }
+        }
+    }
+}

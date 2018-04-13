@@ -43,6 +43,29 @@ services:
     ports:
       - 8281:80
 
+  jenkins-light:
+    build:
+     context: ./jenkins
+     dockerfile: Dockerfile.light
+    image: ci-stack-jenkins-light
+    labels:
+      - com.github.joostvdg.namespace=cidc
+      - com.github.joostvdg.name="Jenkins Master(light)"
+      - com.github.joostvdg.description="Jenkins - CI/Build server"
+      - com.github.joostvdg.webPath=/jenkins
+      - com.github.joostvdg.webPort=8282
+    environment:
+      - HOSTNAME=${JENKINS_HOSTNAME:-localhost}
+      - EXTERNAL_PORT=${JENKINS_EXTERNAL_PORT:-8282}
+      - CONTEXT_ROOT=${JENKINS_CONTEXT_ROOT:-/jenkins}
+      - SONAR_HOSTNAME=${SONAR_HOSTNAME:-sonar}
+      - NEXUS_HOSTNAME=${NEXUS_HOSTNAME:-nexus}
+      - THEME_CSS=http://q-nexus-3.nl.eu.abnamro.com:8082/repository/npm-3rd-party-raw-hosting/cicdsandbox/jenkins-material-theme.css
+    ports:
+      - 8282:8080
+      - 50000:50000
+    volumes: ["jenkins_data_light:/var/jenkins_home"]
+
   jenkins:
     build: jenkins
     image: ci-stack-jenkins
@@ -215,14 +238,14 @@ services:
   #   volumes: ["opt-splunk-etc:/opt/splunk/etc","opt-splunk-var:/opt/splunk/var", "/var/run/docker.sock:/var/run/docker.sock"]
 
   service-listing: 
-    image: abnamrocoesd/cicd-sandbox-util:latest
+    image: cicd-sandbox-utilz:latest
     labels:
       - com.github.joostvdg.namespace=cidc
       - com.github.joostvdg.name="CIDC Service Listing"
       - com.github.joostvdg.description="The container of this page"
     ports:
       - 7777:7777
-    command: cicd-util -action serve -labelPrefix "com.github.joostvdg." -namespace "cidc"
+    command: cicd-util -action serve -labelPrefix "com.github.joostvdg." -namespace "cidc" -siteTitle "CIDC Services"
     volumes: ["/var/run/docker.sock:/var/run/docker.sock"]
 
 ## Docker Registry
@@ -318,6 +341,7 @@ services:
 volumes:
   sonar_data:
   nexus_data:
+  jenkins_data_light:
   jenkins_data:
   jenkins_slave_workspace:
   artifactory_data:

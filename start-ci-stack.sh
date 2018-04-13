@@ -1,1 +1,1 @@
-docker-compose up -d keycloak ldap jenkins jenkins-slave sonar postgres artifactory service-listing registry registry-ui 
+docker-compose -p cd up -d keycloak ldap jenkins jenkins-slave sonar postgres artifactory service-listing registry registry-ui 
