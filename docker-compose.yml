@@ -85,7 +85,7 @@ services:
       - KEYCLOAK_HOSTNAME_LOWERCASE=${KEYCLOAK_HOSTNAME_LOWERCASE:-true}
       - SONAR_HOSTNAME=${SONAR_HOSTNAME:-sonar}
       - NEXUS_HOSTNAME=${NEXUS_HOSTNAME:-nexus}
-      - THEME_CSS=http://q-nexus-3.nl.eu.abnamro.com:8082/repository/npm-3rd-party-raw-hosting/cicdsandbox/jenkins-material-theme.css
+      - THEME_CSS=https://tobix.github.io/jenkins-neo2-theme/dist/neo-light.css
     ports:
       - 8282:8080
       - 50000:50000
