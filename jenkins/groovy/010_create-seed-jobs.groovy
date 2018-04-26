@@ -72,6 +72,7 @@ def scriptApproval = ScriptApproval.get()
 scriptApproval.approveScript('6ea2fb406b2e2f15a64262e21d463acc9df27d18')
 scriptApproval.approveScript('3b03eefc72fad28b97ba99553c9e7ba41e69be39')
 scriptApproval.approveScript('d867d80fcb7ab7c4e521c7a3dd1036eef8061284')
+scriptApproval.approveScript('da7ad71ad9482b41ee5f8be88910632639cb4cbf')
 scriptApproval.save()
 
 println "### Configuring Initial Seed Job - END   ##"

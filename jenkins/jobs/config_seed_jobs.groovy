@@ -17,25 +17,23 @@ def systemScript = '''
         println("=== Configuring SonarQube Server == Start")
         def instance = Jenkins.getInstance()
 
+
         def sonar_token = build.buildVariableResolver.resolve("sonar_token")
         println "sonar_token=$sonar_token"
+        def sonar_url = build.buildVariableResolver.resolve("sonar_url")
+        println "sonar_url=$sonar_url"
 
-        SonarGlobalConfiguration sonar_conf = instance.getDescriptorByType(SonarGlobalConfiguration.class)
-        def sonar_inst = new SonarInstallation(
-            "sonar", // name,     
-            "http://sonar:9000", // serverUrl,     
-            "5.3",     
-            sonar_token, // serverAuthenticationToken,
-            "", // databaseUrl,     
-            "", // databaseLogin,     
-            "", // databasePassword,
-            "", // mojoVersion,     
-            "", // additionalProperties,     
-            new TriggersConfig(), //TriggersConfig triggers,
-            "", // sonarLogin,     
-            "", // sonarPassword,     
-            "" // additionalAnalysisProperties
-        )
+	SonarGlobalConfiguration sonar_conf = instance.getDescriptorByType(SonarGlobalConfiguration.class)
+	// String name, String serverUrl,  String serverAuthenticationToken, String mojoVersion,  String additionalProperties,  TriggersConfig triggers, String additionalAnalysisProperties
+	def sonar_inst = new SonarInstallation(
+	   "sonar",
+	   sonar_url,
+	   sonar_token,
+	   "6.7",
+	   "",
+	   null,
+	   ""
+	)        
 
         // Only add Sonar if it does not exist - do not overwrite existing config
         def sonar_installations = sonar_conf.getInstallations()

@@ -1,1 +1,1 @@
-docker-compose -p cdl up -d jenkins jenkins-slave sonar service-listing
+docker-compose -p cdl up -d jenkins-light jenkins-slave sonar service-listing
